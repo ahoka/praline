@@ -8,7 +8,11 @@
 
 class RequestHandler : public Poco::Net::HTTPRequestHandler
 {
-   void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
+private:
+   using Request = Poco::Net::HTTPServerRequest;
+   using Response = Poco::Net::HTTPServerResponse;
+
+   void handleRequest(Request& request, Response& response);
 };
 
 #endif

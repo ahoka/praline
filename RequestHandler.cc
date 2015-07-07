@@ -9,21 +9,48 @@ namespace
    Poco::Logger& logger = Poco::Logger::get("RequestHandler");
 }
 
-using Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK;
+//
+// /<topic> POST -> create topic
+// /<topic> DELETE -> delete topic
+// /<topic>/messages POST -> push message
+// /<topic>/messages GET -> get message
+// /<topic>/messages HEAD -> header
+//
+// HTTP/1.1 200 OK
+// Date: Tue, 07 Jul 2015 15:58:56 GMT
+// Connection: Keep-Alive
+// Content-Length: 0
+// X-Praline-First: 1234
+// X-Praline-Last: 1400
+//
 
-void RequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
+using Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK;
+using Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST;
+
+void RequestHandler::handleRequest(Request& request, Response& response)
 {
-   logger.information(Poco::Logger::format("URL: $0", request.getURI()));
+   logger.information("URL: %s", request.getURI());
    logger.information("Method: %s", request.getMethod());
 
    std::vector<std::string> path;
    Poco::URI(request.getURI()).getPathSegments(path);
    logger.information("Path len: %z", path.size());
+
+   if (path.size() != 2)
+   {
+      logger.information("dropping request");
+      response.setStatusAndReason(HTTP_BAD_REQUEST);
+      response.setContentLength(0);
+      response.send().flush();
+      return;
+   }
+
+   logger.information("request valid");
 //   path[0]
 
 //   response.setContentLength(0);
    response.setChunkedTransferEncoding(true);
-   response.setStatus(HTTP_OK);
+   response.setStatusAndReason(HTTP_OK);
 
    auto& stream = response.send();
 
