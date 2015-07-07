@@ -1,11 +1,14 @@
 CXX=		clang++-3.6
-CXXFLAGS=	-std=c++14 -stdlib=libc++ -O2 -Wall -Wextra -g
+#LIBCXX=		libc++
+LIBCXX=		libstdc++
+CXXFLAGS=	-std=c++14 -stdlib=${LIBCXX} -O2 -Wall -Wextra -g
 CPPFLAGS=	-I/opt/poco/include
 LD=		${CXX}
-LDFLAGS=	-std=c++14 -stdlib=libc++ -L/opt/poco/lib -Wl,-rpath=/opt/poco/lib
+LDFLAGS=	-std=c++14 -stdlib=${LIBCXX} -L/opt/poco/lib -Wl,-rpath=/opt/poco/lib
 LIBS=		-lPocoFoundation -lPocoUtil -lPocoNet
 
-SRC=		RequestHandlerFactory.cc HttpSubsystem.cc Praline.cc main.cc
+SRC=		RequestHandlerFactory.cc RequestHandler.cc HttpSubsystem.cc \
+		Praline.cc main.cc
 OBJ=		${SRC:.cc=.o}
 
 all: praline

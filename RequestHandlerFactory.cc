@@ -1,15 +1,11 @@
 #include "RequestHandlerFactory.hh"
+#include "RequestHandler.hh"
 
 #include <Poco/Logger.h>
 
 namespace
 {
-   Poco::Logger& logger = Poco::Logger::get("RequestHandler");
-}
-
-void RequestHandler::handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response)
-{
-   logger.information(Poco::Logger::format("URL: $0", request.getURI()));
+   Poco::Logger& logger = Poco::Logger::get("RequestHandlerFactory");
 }
 
 Poco::Net::HTTPRequestHandler *RequestHandlerFactory::createRequestHandler(const Poco::Net::HTTPServerRequest& request)
