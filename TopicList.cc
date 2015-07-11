@@ -1,29 +1,36 @@
 #include "TopicList.hh"
 
-TopicList::TopicList();
-TopicList::~TopicList();
+TopicList::TopicList()
+{
+}
 
-void
+TopicList::~TopicList()
+{
+}
+
+bool
 TopicList::insert(Topic topic)
 {
-   topicMapM.insert(Topic.name(), Topic);
+   auto res = topicMapM.insert({topic.name(), topic});
+   return res.second;
 }
 
 std::pair<bool, Topic>
 TopicList::find(std::string name)
 {
-   auto res = topic.find(name);
+   auto res = topicMapM.find(name);
    if (res == topicMapM.end())
    {
-      return {false, Topic};
+      return {false, Topic("<invalid>")};
    }
    else
    {
-      return {true, res.second};
+      return {true, res->second};
    }
 }
 
-void
+bool
 TopicList::remove(Topic topic)
 {
+   return topicMapM.erase(topic.name()) == 1;
 }

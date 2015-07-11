@@ -8,7 +8,7 @@ LDFLAGS=	-std=c++14 -stdlib=${LIBCXX} -L/opt/poco/lib -Wl,-rpath=/opt/poco/lib
 LIBS=		-lPocoFoundation -lPocoUtil -lPocoNet
 
 SRC=		RequestHandlerFactory.cc RequestHandler.cc HttpSubsystem.cc \
-		Praline.cc main.cc Topic.cc TopicMap.cc
+		Praline.cc main.cc Topic.cc TopicList.cc
 OBJ=		${SRC:.cc=.o}
 
 all: praline

@@ -1,6 +1,8 @@
 #ifndef TOPICLIST_HH
 #define TOPICLIST_HH
 
+#include "Topic.hh"
+
 #include <map>
 #include <utility>
 
@@ -10,12 +12,12 @@ public:
    TopicList();
    ~TopicList();
 
-   void insert(Topic topic);
+   bool insert(Topic topic);
    std::pair<bool, Topic> find(std::string name);
-   void remove(Topic topic);
+   bool remove(Topic topic);
 
 private:
-   using TopicMap = std::map<std::name, Topic>;
+   using TopicMap = std::map<std::string, Topic>;
 
    TopicMap topicMapM;
 };
