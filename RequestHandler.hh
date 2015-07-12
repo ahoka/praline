@@ -6,13 +6,20 @@
 #include <Poco/Net/HTTPServerRequest.h>
 #include <Poco/Net/HTTPServerResponse.h>
 
+#include "TopicList.hh"
+
 class RequestHandler : public Poco::Net::HTTPRequestHandler
 {
+public:
+   RequestHandler(Praline::TopicList&);
+
 private:
    using Request = Poco::Net::HTTPServerRequest;
    using Response = Poco::Net::HTTPServerResponse;
 
    void handleRequest(Request& request, Response& response);
+
+   Praline::TopicList& topicListM;
 };
 
 #endif

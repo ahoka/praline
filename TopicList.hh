@@ -6,6 +6,8 @@
 #include <map>
 #include <utility>
 
+namespace Praline
+{
 class TopicList
 {
 public:
@@ -21,5 +23,6 @@ private:
 
    TopicMap topicMapM;
 };
+}
 
 #endif

@@ -6,6 +6,8 @@
 
 #include <Poco/Net/HTTPServer.h>
 
+#include "TopicList.hh"
+
 class HttpSubsystem : public Poco::Util::Subsystem
 {
 private:
@@ -15,6 +17,7 @@ private:
    virtual void uninitialize();
 
    Poco::Net::HTTPServer* serverM;
+   Praline::TopicList topicListM;
 };
 
 #endif

@@ -7,6 +7,8 @@ class Topic
 {
 public:
    explicit Topic(std::string name);
+   Topic(const Topic&);
+   Topic& operator=(const Topic&);
    ~Topic();
 
    std::string name() const;

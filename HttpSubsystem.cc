@@ -19,7 +19,11 @@ void
 HttpSubsystem::initialize(Poco::Util::Application& app)
 {
 	logger.information("initialize");
-        serverM = new Poco::Net::HTTPServer(new RequestHandlerFactory, 8080);
+        app.loadConfiguration();
+
+        int port = app.config().getInt("port", 8080);
+        logger.information("listening on port %d", port);
+        serverM = new Poco::Net::HTTPServer(new RequestHandlerFactory(topicListM), port);
         serverM->start();
 	logger.information("server running");
 }
