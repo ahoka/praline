@@ -45,7 +45,7 @@ void RequestHandler::handleRequest(Request& request, Response& response)
    if (request.getMethod() == "PUT" && path.size() == 1)
    {
       logger.information("creating topic %s", path[0]);
-      bool success = topicListM.insert(Topic(path[0]));
+      bool success = topicListM.insert(Praline::Topic(path[0]));
       if (success)
       {
          response.setStatusAndReason(HTTP_CREATED);

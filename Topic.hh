@@ -3,6 +3,9 @@
 
 #include <string>
 
+namespace Praline
+{
+
 class Topic
 {
 public:
@@ -16,5 +19,7 @@ public:
 private:
    std::string nameM;
 };
+
+}
 
 #endif
