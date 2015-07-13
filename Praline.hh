@@ -3,6 +3,9 @@
 
 #include <Poco/Util/ServerApplication.h>
 
+namespace Praline
+{
+
 class Praline : public Poco::Util::ServerApplication {
 public:
     Praline();
@@ -10,5 +13,7 @@ public:
 private:
     int main(const std::vector<std::string>& args);
 };
+
+}
 
 #endif

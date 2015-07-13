@@ -3,7 +3,7 @@
 int
 main(int argc, char** argv)
 {
-    Praline praline;
+   Praline::Praline praline;
 
     return praline.run(argc, argv);
 }

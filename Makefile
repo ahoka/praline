@@ -1,6 +1,6 @@
 CXX=		clang++-3.6
-#LIBCXX=		libc++
-LIBCXX=		libstdc++
+LIBCXX=		libc++
+#LIBCXX=		libstdc++
 CXXFLAGS=	-std=c++14 -stdlib=${LIBCXX} -O2 -Wall -Wextra -g
 CPPFLAGS=	-I/opt/poco/include
 LD=		${CXX}

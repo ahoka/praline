@@ -9,18 +9,18 @@ namespace
    Poco::Logger& logger = Poco::Logger::get("Praline");
 }
 
-Praline::Praline()
+Praline::Praline::Praline()
 {
 //   addSubsystem(Poco::SharedPtr<HttpSubsystem>(new HttpSubsystem));
    addSubsystem(new HttpSubsystem);
 }
 
-Praline::~Praline()
+Praline::Praline::~Praline()
 {
 }
 
 int
-Praline::main(const std::vector<std::string>& args)
+Praline::Praline::main(const std::vector<std::string>& args)
 {
    waitForTerminationRequest();
    return 0;
