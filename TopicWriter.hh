@@ -10,10 +10,14 @@ class TopicWriter
 {
 public:
    explicit TopicWriter(Topic topic);
-   TopicWriter(const TopicWriter&);
    ~TopicWriter();
-   TopicWriter& operator=(const TopicWriter&);
    void write(char* data, size_t size);
+
+private:
+   TopicWriter(const TopicWriter&);
+   TopicWriter& operator=(const TopicWriter&);
+
+   int fdM;
 };
 
 }
