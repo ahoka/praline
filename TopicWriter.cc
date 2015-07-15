@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstdio>
 #include <unistd.h>
+#include <errno.h>
 
 #include <Poco/Logger.h>
 
@@ -45,6 +46,13 @@ TopicWriter::open()
 {
    logger.information("Opening file %s", fileNameM);
    fdM = ::open(fileNameM.c_str(), O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
-   assert(fdM > 0);
+   if (fdM < 0)
+   {
+      logger.error("Open failed: %s", std::string(strerror(errno)));
+      return false;
+   }
+
    logger.information("Ok");
+
+   return true;
 }
