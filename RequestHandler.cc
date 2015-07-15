@@ -27,10 +27,21 @@ namespace
 using Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK;
 using Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST;
 using Poco::Net::HTTPResponse::HTTPStatus::HTTP_CREATED;
+using Poco::Net::HTTPResponse::HTTPStatus::HTTP_INTERNAL_SERVER_ERROR;
 
 RequestHandler::RequestHandler(Praline::TopicList& topicList)
    : topicListM(topicList)
 {
+}
+
+namespace
+{
+   void internalError(Poco::Net::HTTPServerResponse& response)
+   {
+      response.setStatusAndReason(HTTP_INTERNAL_SERVER_ERROR);
+      response.setContentLength(0);
+      response.send().flush();
+   }
 }
 
 void RequestHandler::handleRequest(Request& request, Response& response)
@@ -45,9 +56,15 @@ void RequestHandler::handleRequest(Request& request, Response& response)
    if (request.getMethod() == "PUT" && path.size() == 1)
    {
       logger.information("creating topic %s", path[0]);
-      bool success = topicListM.insert(Praline::Topic(path[0]));
+      auto topic = Praline::Topic(path[0]);
+      bool success = topicListM.insert(topic);
       if (success)
       {
+         if (!topic.open())
+         {
+            internalError(response);
+            return;
+         }
          response.setStatusAndReason(HTTP_CREATED);
          response.setContentLength(0);
          response.send().flush();

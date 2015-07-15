@@ -1,6 +1,8 @@
 #ifndef TOPIC_HH
 #define TOPIC_HH
 
+#include "TopicWriter.hh"
+#include <memory>
 #include <string>
 
 namespace Praline
@@ -14,10 +16,12 @@ public:
    Topic& operator=(const Topic&);
    ~Topic();
 
+   bool open();
    std::string name() const;
 
 private:
    std::string nameM;
+   std::shared_ptr<TopicWriter> writerM;
 };
 
 }

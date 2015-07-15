@@ -5,21 +5,29 @@
 #include <cstdio>
 #include <unistd.h>
 
+#include <Poco/Logger.h>
+
+namespace
+{
+   Poco::Logger& logger = Poco::Logger::get("TopicWriter");
+}
+
 using namespace Praline;
 
-TopicWriter::TopicWriter(Topic topic)
+TopicWriter::TopicWriter(const std::string& topicName)
 {
    char filename[256];
 
-   auto res = snprintf(filename, sizeof(filename), "%s.data", topic.name().c_str());
+   auto res = ::snprintf(filename, sizeof(filename), "%s.data", topicName.c_str());
    assert(res > 0 && (size_t)res < sizeof(filename));
 
-   fdM = open(filename, O_CREAT | O_APPEND);
+   fileNameM = std::string(filename);
 }
 
 TopicWriter::~TopicWriter()
 {
-   close(fdM);
+   ::close(fdM);
+   logger.information("Closing file");
 }
 
 TopicWriter::TopicWriter(const TopicWriter& other)
@@ -30,4 +38,13 @@ TopicWriter&
 TopicWriter::operator=(const TopicWriter& other)
 {
    return *this;
+}
+
+bool
+TopicWriter::open()
+{
+   logger.information("Opening file %s", fileNameM);
+   fdM = ::open(fileNameM.c_str(), O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
+   assert(fdM > 0);
+   logger.information("Ok");
 }
