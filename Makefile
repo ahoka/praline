@@ -15,7 +15,7 @@ TEST=		TopicRequestHandlerTest.cc
 
 OBJ=		${SRC:.cc=.o}
 
-all: praline
+all: test praline
 
 %.o: %.cc
 	${CXX} ${CXXFLAGS} ${CPPFLAGS} -c -o $@ $<
@@ -26,13 +26,12 @@ all: praline
 praline: ${OBJ}
 	${LD} ${LDFLAGS} -o praline ${OBJ} ${LIBS}
 
-InterpreterTest: ${SRC} TopicRequestHandlerTest.o
+TopicRequestHandlerTest: TopicRequestHandlerTest.o
 	${CXX} ${CXXFLAGS} -pthread -I. $^ -o $@
 
 .PHONY: test
-test: InterpreterTest StringInputReaderTest
-	${PWD}/StringInputReaderTest
-	${PWD}/InterpreterTest
+test: TopicRequestHandlerTest
+	${PWD}/TopicRequestHandlerTest
 
 .PHONY: clean
 clean:
