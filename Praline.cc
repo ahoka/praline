@@ -31,7 +31,7 @@ Praline::Praline::Praline(Poco::Logger& logger)
    Poco::Logger::root().setChannel(asyncChannel);
 
    logM.setChannel(asyncChannel);
-   logM.information("startup up");
+   logM.information("starting up");
 
    addSubsystem(new HttpSubsystem);
 }

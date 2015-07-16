@@ -4,11 +4,6 @@
 #include <Poco/URI.h>
 #include <vector>
 
-namespace
-{
-   Poco::Logger& logger = Poco::Logger::get("RequestHandler");
-}
-
 //
 // /<topic> POST -> create topic
 // /<topic> DELETE -> delete topic
@@ -29,11 +24,6 @@ using Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST;
 using Poco::Net::HTTPResponse::HTTPStatus::HTTP_CREATED;
 using Poco::Net::HTTPResponse::HTTPStatus::HTTP_INTERNAL_SERVER_ERROR;
 
-RequestHandler::RequestHandler(praline::TopicList& topicList)
-   : topicListM(topicList)
-{
-}
-
 namespace
 {
    void internalError(Poco::Net::HTTPServerResponse& response)
@@ -44,18 +34,26 @@ namespace
    }
 }
 
+using namespace praline;
+
+RequestHandler::RequestHandler(praline::TopicList& topicList, Poco::Logger& logger)
+   : topicListM(topicList),
+     logM(logger)
+{
+}
+
 void RequestHandler::handleRequest(Request& request, Response& response)
 {
-   logger.information("URL: %s", request.getURI());
-   logger.information("Method: %s", request.getMethod());
+   logM.information("URL: %s", request.getURI());
+   logM.information("Method: %s", request.getMethod());
 
    std::vector<std::string> path;
    Poco::URI(request.getURI()).getPathSegments(path);
-   logger.information("Path len: %z", path.size());
+   logM.information("Path len: %z", path.size());
 
    if (request.getMethod() == "PUT" && path.size() == 1)
    {
-      logger.information("creating topic %s", path[0]);
+      logM.information("creating topic %s", path[0]);
       auto topic = praline::Topic(path[0]);
       bool success = topicListM.insert(topic);
       if (success)
@@ -80,14 +78,14 @@ void RequestHandler::handleRequest(Request& request, Response& response)
 
    if (path.size() != 2)
    {
-      logger.information("dropping request");
+      logM.information("dropping request");
       response.setStatusAndReason(HTTP_BAD_REQUEST);
       response.setContentLength(0);
       response.send().flush();
       return;
    }
 
-   logger.information("request valid");
+   logM.information("request valid");
 //   path[0]
 
 //   response.setContentLength(0);
