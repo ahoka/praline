@@ -17,6 +17,8 @@ namespace
 
 using Poco::AutoPtr;
 
+using namespace praline;
+
 Praline::Praline::Praline(Poco::Logger& logger)
    : logM(logger)
 {
@@ -27,9 +29,9 @@ Praline::Praline::Praline(Poco::Logger& logger)
    AutoPtr<Poco::AsyncChannel> asyncChannel(new Poco::AsyncChannel(formattingChannel)); 
    
    Poco::Logger::root().setChannel(asyncChannel);
-   Poco::Logger::root().information("Praline starting up");
+
    logM.setChannel(asyncChannel);
-   logM.information("Logtest");
+   logM.information("startup up");
 
    addSubsystem(new HttpSubsystem);
 }

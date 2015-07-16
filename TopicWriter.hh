@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace Praline
+namespace praline
 {
 
 class TopicWriter

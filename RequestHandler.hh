@@ -11,7 +11,7 @@
 class RequestHandler : public Poco::Net::HTTPRequestHandler
 {
 public:
-   RequestHandler(Praline::TopicList&);
+   RequestHandler(praline::TopicList&);
 
 private:
    using Request = Poco::Net::HTTPServerRequest;
@@ -19,7 +19,7 @@ private:
 
    void handleRequest(Request& request, Response& response);
 
-   Praline::TopicList& topicListM;
+   praline::TopicList& topicListM;
 };
 
 #endif

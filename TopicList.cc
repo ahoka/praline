@@ -1,6 +1,6 @@
 #include "TopicList.hh"
 
-using namespace Praline;
+using namespace praline;
 
 TopicList::TopicList()
 {

@@ -3,7 +3,7 @@
 
 #include <Poco/Util/ServerApplication.h>
 
-namespace Praline
+namespace praline
 {
 
 class Praline : public Poco::Util::ServerApplication {

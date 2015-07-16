@@ -8,8 +8,15 @@
 
 #include "TopicList.hh"
 
+namespace praline
+{
+
 class HttpSubsystem : public Poco::Util::Subsystem
 {
+public:
+   HttpSubsystem(Poco::Logger& logger = Poco::Logger::get("Http"));
+   ~HttpSubsystem();
+   
 private:
    virtual void initialize(Poco::Util::Application& app);
    virtual const char* name() const;
@@ -17,7 +24,11 @@ private:
    virtual void uninitialize();
 
    Poco::Net::HTTPServer* serverM;
-   Praline::TopicList topicListM;
+   TopicList topicListM;
+
+   Poco::Logger& logM;
 };
+
+}
 
 #endif

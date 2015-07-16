@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-namespace Praline
+namespace praline
 {
 
 class Topic

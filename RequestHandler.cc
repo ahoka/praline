@@ -29,7 +29,7 @@ using Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST;
 using Poco::Net::HTTPResponse::HTTPStatus::HTTP_CREATED;
 using Poco::Net::HTTPResponse::HTTPStatus::HTTP_INTERNAL_SERVER_ERROR;
 
-RequestHandler::RequestHandler(Praline::TopicList& topicList)
+RequestHandler::RequestHandler(praline::TopicList& topicList)
    : topicListM(topicList)
 {
 }
@@ -56,7 +56,7 @@ void RequestHandler::handleRequest(Request& request, Response& response)
    if (request.getMethod() == "PUT" && path.size() == 1)
    {
       logger.information("creating topic %s", path[0]);
-      auto topic = Praline::Topic(path[0]);
+      auto topic = praline::Topic(path[0]);
       bool success = topicListM.insert(topic);
       if (success)
       {

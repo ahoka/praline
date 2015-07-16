@@ -4,9 +4,15 @@
 #include <Poco/Net/HTTPServer.h>
 #include <Poco/Logger.h>
 
-namespace
+using namespace praline;
+
+HttpSubsystem::HttpSubsystem(Poco::Logger& logger)
+   : logM(logger)
 {
-    Poco::Logger& logger = Poco::Logger::get("Http");
+}
+
+HttpSubsystem::~HttpSubsystem()
+{
 }
 
 const char*
@@ -18,27 +24,27 @@ HttpSubsystem::name() const
 void
 HttpSubsystem::initialize(Poco::Util::Application& app)
 {
-	logger.information("initialize");
+	logM.information("initialize");
         app.loadConfiguration();
 
         int port = app.config().getInt("port", 8080);
-        logger.information("listening on port %d", port);
+        logM.information("listening on port %d", port);
         serverM = new Poco::Net::HTTPServer(new RequestHandlerFactory(topicListM), port);
         serverM->start();
-	logger.information("server running");
+	logM.information("server running");
 }
 
 void
 HttpSubsystem::reinitialize(Poco::Util::Application& app)
 {
-	logger.information("reinitalize");
+	logM.information("reinitalize");
 }
 
 void
 HttpSubsystem::uninitialize()
 {
-	logger.information("waiting for request termination");
+	logM.information("waiting for request termination");
         serverM->stopAll();
-	logger.information("uninitalize");
+	logM.information("uninitalize");
         delete serverM;
 }

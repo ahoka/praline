@@ -2,7 +2,7 @@
 #include <Poco/Net/HTTPRequestHandler.h>
 #include <Poco/Net/HTTPServerRequest.h>
 
-namespace Praline
+namespace praline
 {
    class TopicList;
 }
@@ -10,10 +10,10 @@ namespace Praline
 class RequestHandlerFactory : public Poco::Net::HTTPRequestHandlerFactory
 {
 public:
-   RequestHandlerFactory(Praline::TopicList&);
+   RequestHandlerFactory(praline::TopicList&);
    ~RequestHandlerFactory();
 
 private:
    Poco::Net::HTTPRequestHandler* createRequestHandler(const Poco::Net::HTTPServerRequest& request);
-   Praline::TopicList& topicListM;
+   praline::TopicList& topicListM;
 };

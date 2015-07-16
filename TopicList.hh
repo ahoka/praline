@@ -6,7 +6,7 @@
 #include <map>
 #include <utility>
 
-namespace Praline
+namespace praline
 {
 class TopicList
 {

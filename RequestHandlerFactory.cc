@@ -8,7 +8,7 @@ namespace
    Poco::Logger& logger = Poco::Logger::get("RequestHandlerFactory");
 }
 
-RequestHandlerFactory::RequestHandlerFactory(Praline::TopicList& topicList)
+RequestHandlerFactory::RequestHandlerFactory(praline::TopicList& topicList)
    : topicListM(topicList)
 {
 }

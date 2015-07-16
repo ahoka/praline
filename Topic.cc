@@ -1,6 +1,6 @@
 #include "Topic.hh"
 
-using namespace Praline;
+using namespace praline;
 
 Topic::Topic(std::string name)
    : nameM(name),

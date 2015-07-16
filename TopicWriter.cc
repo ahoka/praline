@@ -13,7 +13,7 @@ namespace
    Poco::Logger& logger = Poco::Logger::get("TopicWriter");
 }
 
-using namespace Praline;
+using namespace praline;
 
 TopicWriter::TopicWriter(const std::string& topicName)
 {
