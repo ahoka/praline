@@ -1,17 +1,18 @@
 CXX=		clang++-3.6
 CPP=		${CXX} -E
 LIBCXX=		libc++
-#LIBCXX=		libstdc++
-CXXFLAGS=	-std=c++14 -stdlib=${LIBCXX} -O2 -Wall -Wextra -g
+#LIBCXX=		libc++
+LIBCXX=		libstdc++
+CXXFLAGS=	-std=c++14 -stdlib=${LIBCXX} -O0 -Wall -Wextra -g
 CPPFLAGS=	-I/opt/poco/include
 LD=		${CXX}
 LDFLAGS=	-std=c++14 -stdlib=${LIBCXX} -L/opt/poco/lib -Wl,-rpath=/opt/poco/lib
 LIBS=		-lPocoFoundation -lPocoUtil -lPocoNet
 
 SRC=		RequestHandlerFactory.cc RequestHandler.cc HttpSubsystem.cc \
-		Praline.cc main.cc Topic.cc TopicList.cc TopicWriter.cc
+		Praline.cc Topic.cc TopicList.cc TopicWriter.cc
 
-TEST=		TopicRequestHandlerTest.cc
+TEST=		RequestHandlerTest.cc
 
 OBJ=		${SRC:.cc=.o}
 
@@ -23,15 +24,15 @@ all: test praline
 %.d: %.cc
 	${CPP} ${CXXFLAGS} ${CPPFLAGS} -pthread -I. $< -MM -o $@
 
-praline: ${OBJ}
-	${LD} ${LDFLAGS} -o praline ${OBJ} ${LIBS}
+praline: ${OBJ} main.o
+	${LD} ${LDFLAGS} -o praline ${OBJ} main.o ${LIBS}
 
-TopicRequestHandlerTest: TopicRequestHandlerTest.o
-	${CXX} ${CXXFLAGS} -pthread -I. $^ -o $@
+RequestHandlerTest: RequestHandlerTest.o ${OBJ}
+	${CXX} ${CXXFLAGS} ${LDFLAGS} ${LIBS} -pthread -I. $^ -o $@
 
 .PHONY: test
-test: TopicRequestHandlerTest
-	${PWD}/TopicRequestHandlerTest
+test: RequestHandlerTest
+	${PWD}/RequestHandlerTest
 
 .PHONY: clean
 clean:

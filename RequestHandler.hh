@@ -15,14 +15,13 @@ namespace praline
 class RequestHandler : public Poco::Net::HTTPRequestHandler
 {
 public:
-   RequestHandler(TopicList&, Poco::Logger& logger = Poco::Logger::get("RequestHandler"));
-
-private:
    using Request = Poco::Net::HTTPServerRequest;
    using Response = Poco::Net::HTTPServerResponse;
 
+   RequestHandler(TopicList&, Poco::Logger& logger = Poco::Logger::get("RequestHandler"));
    void handleRequest(Request& request, Response& response);
 
+private:
    TopicList& topicListM;
    Poco::Logger& logM;
 };

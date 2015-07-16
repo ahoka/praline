@@ -12,11 +12,11 @@ class TopicList
 {
 public:
    TopicList();
-   ~TopicList();
+   virtual ~TopicList();
 
-   bool insert(Topic topic);
-   std::pair<bool, Topic> find(std::string name);
-   bool remove(Topic topic);
+   virtual bool insert(Topic topic);
+   virtual std::pair<bool, Topic> find(std::string name);
+   virtual bool remove(Topic topic);
 
 private:
    using TopicMap = std::map<std::string, Topic>;

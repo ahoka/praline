@@ -19,7 +19,7 @@ RequestHandlerFactory::~RequestHandlerFactory()
 {
 }
 
-Poco::Net::HTTPRequestHandler *RequestHandlerFactory::createRequestHandler(const Poco::Net::HTTPServerRequest& request)
+Poco::Net::HTTPRequestHandler *RequestHandlerFactory::createRequestHandler(const Poco::Net::HTTPServerRequest&)
 {
    logger.information("craeteRequestHandler");
    return new RequestHandler(topicListM);
