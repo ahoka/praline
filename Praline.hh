@@ -8,10 +8,12 @@ namespace Praline
 
 class Praline : public Poco::Util::ServerApplication {
 public:
-    Praline();
-    ~Praline();
+   Praline(Poco::Logger& logger = Poco::Logger::get("Praline"));
+   ~Praline();
 private:
-    int main(const std::vector<std::string>& args);
+   int main(const std::vector<std::string>& args);
+
+   Poco::Logger& logM;
 };
 
 }

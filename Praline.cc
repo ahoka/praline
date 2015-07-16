@@ -2,16 +2,35 @@
 #include "HttpSubsystem.hh"
 
 #include <Poco/Logger.h>
+#include <Poco/PatternFormatter.h>
+#include <Poco/AsyncChannel.h>
+#include <Poco/ConsoleChannel.h>
+#include <Poco/FormattingChannel.h>
+
 #include <Poco/SharedPtr.h>
+#include <Poco/AutoPtr.h>
 
 namespace
 {
-   Poco::Logger& logger = Poco::Logger::get("Praline");
+//   Poco::Logger& logger = Poco::Logger::get("Praline");
 }
 
-Praline::Praline::Praline()
+using Poco::AutoPtr;
+
+Praline::Praline::Praline(Poco::Logger& logger)
+   : logM(logger)
 {
-//   addSubsystem(Poco::SharedPtr<HttpSubsystem>(new HttpSubsystem));
+   AutoPtr<Poco::ColorConsoleChannel> consoleChannel(new Poco::ColorConsoleChannel);
+   AutoPtr<Poco::PatternFormatter> patternFormatter(new Poco::PatternFormatter);
+   patternFormatter->setProperty("pattern", "%Y-%m-%d %H:%M:%S %s: %t");
+   AutoPtr<Poco::FormattingChannel> formattingChannel(new Poco::FormattingChannel(patternFormatter, consoleChannel));
+   AutoPtr<Poco::AsyncChannel> asyncChannel(new Poco::AsyncChannel(formattingChannel)); 
+   
+   Poco::Logger::root().setChannel(asyncChannel);
+   Poco::Logger::root().information("Praline starting up");
+   logM.setChannel(asyncChannel);
+   logM.information("Logtest");
+
    addSubsystem(new HttpSubsystem);
 }
 
