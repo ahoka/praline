@@ -1,33 +1,45 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include "fakeit.hpp"
+#include "hippomocks.h"
 
 #include "RequestHandler.hh"
 
+#include "stubs/HTTPServerRequestStub.hh"
+#include "stubs/HTTPServerResponseStub.hh"
+
 #include <Poco/NullChannel.h>
 
-using namespace fakeit;
 using namespace praline;
+
+//using HTTPStatus = Poco::Net::HTTPResponse::HTTPStatus;
+using Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK;
+using Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST;
+using Poco::Net::HTTPResponse::HTTPStatus::HTTP_CREATED;
+using Poco::Net::HTTPResponse::HTTPStatus::HTTP_INTERNAL_SERVER_ERROR;
 
 SCENARIO("RequestHandlerTest", "[http]")
 {
    GIVEN("A request handler")
    {
-      Mock<TopicList> topicListMock;
-      RequestHandler rh(topicListMock.get());
+      MockRepository mocks;
+      TopicList& tl = *mocks.Mock<TopicList>();
+      mocks.ExpectCall(&tl, TopicList::insert).Return(true);
 
-      WHEN("Doing a POST request to /topic")
+      RequestHandler rh(tl);
+      
+      WHEN("Doing a PUT request to /topic")
       {
-         Mock<RequestHandler::Response> response;
-         Mock<RequestHandler::Request> request;
+         HTTPServerRequestStub request;
+         request.setMethod("PUT");
+         request.setURI("/topic");
 
-         Method(request, getMethod) = std::string("POST");
-         Method(request, getURI) = std::string("/topic");
+         HTTPServerResponseStub response;
 
-//         rh.handleRequest(request.get(), response.get());
+         rh.handleRequest(request, response);
 
          THEN("The topic is created")
          {
+            CHECK(response.getStatus() == 201);
          }
       }
    }
