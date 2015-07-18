@@ -23,6 +23,7 @@ using Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK;
 using Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST;
 using Poco::Net::HTTPResponse::HTTPStatus::HTTP_CREATED;
 using Poco::Net::HTTPResponse::HTTPStatus::HTTP_INTERNAL_SERVER_ERROR;
+using Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND;
 
 namespace
 {
@@ -42,7 +43,60 @@ RequestHandler::RequestHandler(praline::TopicList& topicList, Poco::Logger& logg
 {
 }
 
-void RequestHandler::handleRequest(Request& request, Response& response)
+void
+RequestHandler::handleTopicPut(Request& request, Response& response, const std::string& topicName)
+{
+   logM.information("creating topic %s", topicName);
+
+   auto topic = praline::Topic(topicName);
+   bool success = topicListM.insert(topic);
+   if (success)
+   {
+      if (!topic.open())
+      {
+         internalError(response);
+         return;
+      }
+      response.setStatusAndReason(HTTP_CREATED);
+      response.setContentLength(0);
+      response.send().flush();
+   }
+   else
+   {
+      response.setStatusAndReason(HTTP_OK);
+      response.setContentLength(0);
+      response.send().flush();
+   }
+}
+
+void
+RequestHandler::handleTopicDelete(Request& request, Response& response, const std::string& topicName)
+{
+   logM.information("deleting topic %s", topicName);
+
+   auto topic = praline::Topic(topicName);
+   bool success = topicListM.remove(topic);
+   if (success)
+   {
+      if (!topic.open())
+      {
+         internalError(response);
+         return;
+      }
+      response.setStatusAndReason(HTTP_OK);
+      response.setContentLength(0);
+      response.send().flush();
+   }
+   else
+   {
+      response.setStatusAndReason(HTTP_NOT_FOUND);
+      response.setContentLength(0);
+      response.send().flush();
+   }
+}
+
+void
+RequestHandler::handleRequest(Request& request, Response& response)
 {
    logM.information("URL: %s", request.getURI());
    logM.information("Method: %s", request.getMethod());
@@ -51,29 +105,18 @@ void RequestHandler::handleRequest(Request& request, Response& response)
    Poco::URI(request.getURI()).getPathSegments(path);
    logM.information("Path len: %z", path.size());
 
-   if (request.getMethod() == "PUT" && path.size() == 1)
+   if (path.size() == 1)
    {
-      logM.information("creating topic %s", path[0]);
-      auto topic = praline::Topic(path[0]);
-      bool success = topicListM.insert(topic);
-      if (success)
+      if (request.getMethod() == "PUT")
       {
-         if (!topic.open())
-         {
-            internalError(response);
-            return;
-         }
-         response.setStatusAndReason(HTTP_CREATED);
-         response.setContentLength(0);
-         response.send().flush();
+         handleTopicPut(request, response, path[0]);
+         return;
       }
-      else
+      else if (request.getMethod() == "DELETE")
       {
-         response.setStatusAndReason(HTTP_OK);
-         response.setContentLength(0);
-         response.send().flush();
+         handleTopicDelete(request, response, path[0]);
+         return;
       }
-      return;
    }
 
    if (path.size() != 2)

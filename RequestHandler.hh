@@ -22,6 +22,9 @@ public:
    void handleRequest(Request& request, Response& response);
 
 private:
+   void handleTopicPut(Request&, Response&, const std::string&);
+   void handleTopicDelete(Request&, Response&, const std::string&);
+
    TopicList& topicListM;
    Poco::Logger& logM;
 };
