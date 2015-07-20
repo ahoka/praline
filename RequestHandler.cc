@@ -78,11 +78,6 @@ RequestHandler::handleTopicDelete(Request& request, Response& response, const st
    bool success = topicListM.remove(topic);
    if (success)
    {
-      if (!topic.open())
-      {
-         internalError(response);
-         return;
-      }
       response.setStatusAndReason(HTTP_OK);
       response.setContentLength(0);
       response.send().flush();

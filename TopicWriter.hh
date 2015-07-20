@@ -1,6 +1,8 @@
 #ifndef TOPICWRITER_HH
 #define TOPICWRITER_HH
 
+#include <Poco/Logger.h>
+
 #include <string>
 
 namespace praline
@@ -9,7 +11,7 @@ namespace praline
 class TopicWriter
 {
 public:
-   explicit TopicWriter(const std::string& topicName);
+   explicit TopicWriter(const std::string& topicName, Poco::Logger& logger = Poco::Logger::get("TopicWriter"));
    ~TopicWriter();
    void write(char* data, size_t size);
    bool open();
@@ -20,6 +22,7 @@ private:
 
    std::string fileNameM;
    int fdM;
+   Poco::Logger& logM;
 };
 
 }

@@ -6,16 +6,11 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include <Poco/Logger.h>
-
-namespace
-{
-   Poco::Logger& logger = Poco::Logger::get("TopicWriter");
-}
-
 using namespace praline;
 
-TopicWriter::TopicWriter(const std::string& topicName)
+TopicWriter::TopicWriter(const std::string& topicName, Poco::Logger& logger)
+   : fdM(-1),
+     logM(logger)
 {
    char filename[256];
 
@@ -27,11 +22,17 @@ TopicWriter::TopicWriter(const std::string& topicName)
 
 TopicWriter::~TopicWriter()
 {
-   ::close(fdM);
-   logger.information("Closing file");
+   if (fdM > -1)
+   {
+      ::close(fdM);
+      logM.information("Closing file");
+   }
 }
 
 TopicWriter::TopicWriter(const TopicWriter& other)
+   : fileNameM(other.fileNameM),
+     fdM(other.fdM),
+     logM(other.logM)
 {
 }
 
@@ -44,15 +45,15 @@ TopicWriter::operator=(const TopicWriter& other)
 bool
 TopicWriter::open()
 {
-   logger.information("Opening file %s", fileNameM);
+   logM.information("Opening file %s", fileNameM);
    fdM = ::open(fileNameM.c_str(), O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
    if (fdM < 0)
    {
-      logger.error("Open failed: %s", std::string(strerror(errno)));
+      logM.error("Open failed: %s", std::string(strerror(errno)));
       return false;
    }
 
-   logger.information("Ok");
+   logM.information("Ok");
 
    return true;
 }
