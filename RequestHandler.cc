@@ -55,12 +55,12 @@ RequestHandler::handleTopicPost(Request& request, Response& response, const std:
    }
    else
    {
-      // auto topic = res.second;
-      // if (!topic.write())
-      // {
-      //    internalError();
-      // }
-      // else
+      auto topic = res.second;
+      if (!topic.write(request.stream()))
+      {
+         internalError(response);
+      }
+      else
       {
          // or ACCEPTED when we go async?
          response.setStatusAndReason(HTTP_OK);
@@ -140,44 +140,24 @@ RequestHandler::handleRequest(Request& request, Response& response)
       if (request.getMethod() == "PUT")
       {
          handleTopicPut(request, response, path[0]);
-         return;
       }
       else if (request.getMethod() == "DELETE")
       {
          handleTopicDelete(request, response, path[0]);
-         return;
+      }
+      else if (request.getMethod() == "POST")
+      {
+         handleTopicPost(request, response, path[0]);
+      }
+      else if (request.getMethod() == "GET")
+      {
+         handleTopicGet(request, response, path[0]);
       }
    }
-
-   if (path.size() != 2)
+   else
    {
-      logM.information("dropping request");
+      logM.information("dropping invalid request");
       response.setStatusAndReason(HTTP_BAD_REQUEST);
       response.setContentLength(0);
-      response.send().flush();
-      return;
    }
-
-   logM.information("request valid");
-//   path[0]
-
-//   response.setContentLength(0);
-   response.setChunkedTransferEncoding(true);
-   response.setStatusAndReason(HTTP_OK);
-
-   auto& stream = response.send();
-
-   stream << "H";
-   stream << "e";
-   stream << "l";
-   stream << "l";
-
-   stream.flush();
-
-   stream << "o";
-   stream << "!";
-   stream << "\r";
-   stream << "\n";
-
-   stream.flush();
 }

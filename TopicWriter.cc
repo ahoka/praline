@@ -59,5 +59,8 @@ TopicWriter::open()
 bool
 TopicWriter::write(std::istream& data)
 {
-   return false;
+   streamM << data.rdbuf();
+   streamM.flush();
+   
+   return streamM.bad() || streamM.fail();
 }
