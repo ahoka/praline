@@ -17,6 +17,7 @@ public:
    ~Topic();
 
    bool open();
+   bool write(std::istream& data);
    std::string name() const;
 
 private:

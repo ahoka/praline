@@ -22,6 +22,8 @@ public:
    void handleRequest(Request& request, Response& response);
 
 private:
+   void handleTopicGet(Request&, Response&, const std::string&);
+   void handleTopicPost(Request&, Response&, const std::string&);
    void handleTopicPut(Request&, Response&, const std::string&);
    void handleTopicDelete(Request&, Response&, const std::string&);
 

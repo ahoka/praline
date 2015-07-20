@@ -4,6 +4,7 @@
 #include <Poco/Logger.h>
 
 #include <string>
+#include <fstream>
 
 namespace praline
 {
@@ -13,7 +14,7 @@ class TopicWriter
 public:
    explicit TopicWriter(const std::string& topicName, Poco::Logger& logger = Poco::Logger::get("TopicWriter"));
    ~TopicWriter();
-   void write(char* data, size_t size);
+   bool write(std::istream& data);
    bool open();
 
 private:
@@ -21,7 +22,8 @@ private:
    TopicWriter& operator=(const TopicWriter&);
 
    std::string fileNameM;
-   int fdM;
+   std::ofstream streamM;
+
    Poco::Logger& logM;
 };
 

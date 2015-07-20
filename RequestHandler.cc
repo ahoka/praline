@@ -44,6 +44,41 @@ RequestHandler::RequestHandler(praline::TopicList& topicList, Poco::Logger& logg
 }
 
 void
+RequestHandler::handleTopicPost(Request& request, Response& response, const std::string& topicName)
+{
+   auto res = topicListM.find(topicName);
+   if (!res.first)
+   {
+      response.setStatusAndReason(HTTP_NOT_FOUND);
+      response.setContentLength(0);
+      response.send().flush();
+   }
+   else
+   {
+      // auto topic = res.second;
+      // if (!topic.write())
+      // {
+      //    internalError();
+      // }
+      // else
+      {
+         // or ACCEPTED when we go async?
+         response.setStatusAndReason(HTTP_OK);
+         response.setContentLength(0);
+         response.send().flush();
+      }
+   }
+}
+
+void
+RequestHandler::handleTopicGet(Request& request, Response& response, const std::string& topicName)
+{
+   response.setStatusAndReason(HTTP_BAD_REQUEST);
+   response.setContentLength(0);
+   response.send().flush();
+}
+
+void
 RequestHandler::handleTopicPut(Request& request, Response& response, const std::string& topicName)
 {
    logM.information("creating topic %s", topicName);

@@ -38,3 +38,9 @@ Topic::open()
 {
    return writerM->open();
 }
+
+bool
+Topic::write(std::istream& data)
+{
+   return writerM->write(data);
+}

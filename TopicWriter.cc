@@ -9,29 +9,26 @@
 using namespace praline;
 
 TopicWriter::TopicWriter(const std::string& topicName, Poco::Logger& logger)
-   : fdM(-1),
+   : fileNameM(topicName + ".data"),
      logM(logger)
 {
-   char filename[256];
-
-   auto res = ::snprintf(filename, sizeof(filename), "%s.data", topicName.c_str());
-   assert(res > 0 && (size_t)res < sizeof(filename));
-
-   fileNameM = std::string(filename);
 }
 
 TopicWriter::~TopicWriter()
 {
-   if (fdM > -1)
+   if (streamM.is_open())
    {
-      ::close(fdM);
       logM.information("Closing file");
+      streamM.close();
+      if (streamM.fail())
+      {
+         logM.information("Closing file failed!");
+      }
    }
 }
 
 TopicWriter::TopicWriter(const TopicWriter& other)
    : fileNameM(other.fileNameM),
-     fdM(other.fdM),
      logM(other.logM)
 {
 }
@@ -46,14 +43,21 @@ bool
 TopicWriter::open()
 {
    logM.information("Opening file %s", fileNameM);
-   fdM = ::open(fileNameM.c_str(), O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
-   if (fdM < 0)
+
+   streamM.open(fileNameM);
+   if (streamM.fail())
    {
-      logM.error("Open failed: %s", std::string(strerror(errno)));
+      logM.error("Open failed!");
       return false;
    }
 
-   logM.information("Ok");
+   logM.information("Opened successful");
 
    return true;
+}
+
+bool
+TopicWriter::write(std::istream& data)
+{
+   return false;
 }
