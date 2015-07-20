@@ -46,9 +46,12 @@ RequestHandler::RequestHandler(praline::TopicList& topicList, Poco::Logger& logg
 void
 RequestHandler::handleTopicPost(Request& request, Response& response, const std::string& topicName)
 {
+   logM.information("posting message to topic '%s'", topicName);
+   
    auto res = topicListM.find(topicName);
    if (!res.first)
    {
+      logM.information("topic '%s' is not existing or open", topicName);
       response.setStatusAndReason(HTTP_NOT_FOUND);
       response.setContentLength(0);
       response.send().flush();
@@ -58,6 +61,7 @@ RequestHandler::handleTopicPost(Request& request, Response& response, const std:
       auto topic = res.second;
       if (!topic.write(request.stream()))
       {
+         logM.information("error writing to topic '%s'", topicName);
          internalError(response);
       }
       else
@@ -73,6 +77,8 @@ RequestHandler::handleTopicPost(Request& request, Response& response, const std:
 void
 RequestHandler::handleTopicGet(Request& request, Response& response, const std::string& topicName)
 {
+   logM.information("getting message from topic '%s'", topicName);
+   
    response.setStatusAndReason(HTTP_BAD_REQUEST);
    response.setContentLength(0);
    response.send().flush();
@@ -81,7 +87,7 @@ RequestHandler::handleTopicGet(Request& request, Response& response, const std::
 void
 RequestHandler::handleTopicPut(Request& request, Response& response, const std::string& topicName)
 {
-   logM.information("creating topic %s", topicName);
+   logM.information("creating topic '%s'", topicName);
 
    auto topic = praline::Topic(topicName);
    bool success = topicListM.insert(topic);
@@ -107,7 +113,7 @@ RequestHandler::handleTopicPut(Request& request, Response& response, const std::
 void
 RequestHandler::handleTopicDelete(Request& request, Response& response, const std::string& topicName)
 {
-   logM.information("deleting topic %s", topicName);
+   logM.information("deleting topic '%s'", topicName);
 
    auto topic = praline::Topic(topicName);
    bool success = topicListM.remove(topic);
@@ -133,8 +139,6 @@ RequestHandler::handleRequest(Request& request, Response& response)
 
    std::vector<std::string> path;
    Poco::URI(request.getURI()).getPathSegments(path);
-   logM.information("Path len: %z", path.size());
-
    if (path.size() == 1)
    {
       if (request.getMethod() == "PUT")

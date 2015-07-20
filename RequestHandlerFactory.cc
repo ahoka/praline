@@ -1,17 +1,12 @@
 #include "RequestHandlerFactory.hh"
 #include "RequestHandler.hh"
 
-#include <Poco/Logger.h>
-
-namespace
-{
-   Poco::Logger& logger = Poco::Logger::get("RequestHandlerFactory");
-}
-
 using namespace praline;
 
-RequestHandlerFactory::RequestHandlerFactory(praline::TopicList& topicList)
-   : topicListM(topicList)
+RequestHandlerFactory::RequestHandlerFactory(praline::TopicList& topicList,
+                                             Poco::Logger& logger)
+   : topicListM(topicList),
+     logM(logger)
 {
 }
 
@@ -21,6 +16,6 @@ RequestHandlerFactory::~RequestHandlerFactory()
 
 Poco::Net::HTTPRequestHandler *RequestHandlerFactory::createRequestHandler(const Poco::Net::HTTPServerRequest&)
 {
-   logger.information("craeteRequestHandler");
+   logM.information("Creating request handler");
    return new RequestHandler(topicListM);
 }

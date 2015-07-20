@@ -59,8 +59,21 @@ TopicWriter::open()
 bool
 TopicWriter::write(std::istream& data)
 {
+   logM.information("Writing to file '%s'", fileNameM);
+
+   streamM.clear();
    streamM << data.rdbuf();
    streamM.flush();
+
+   if (streamM.bad())
+   {
+      logM.information("Writing to file '%s' set badbit!", fileNameM);
+   }
+
+   if (streamM.fail())
+   {
+      logM.information("Writing to file '%s' set failbit!", fileNameM);
+   }
    
-   return streamM.bad() || streamM.fail();
+   return streamM.good();
 }
