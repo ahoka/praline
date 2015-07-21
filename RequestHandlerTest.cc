@@ -10,13 +10,7 @@
 #include <Poco/NullChannel.h>
 
 using namespace praline;
-
-//using HTTPStatus = Poco::Net::HTTPResponse::HTTPStatus;
-using Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK;
-using Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST;
-using Poco::Net::HTTPResponse::HTTPStatus::HTTP_CREATED;
-using Poco::Net::HTTPResponse::HTTPStatus::HTTP_INTERNAL_SERVER_ERROR;
-using Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND;
+using namespace Poco::Net;
 
 SCENARIO("RequestHandlerTest", "[http]")
 {
@@ -40,7 +34,7 @@ SCENARIO("RequestHandlerTest", "[http]")
 
          THEN("The topic is created")
          {
-            CHECK(response.getStatus() == HTTP_CREATED);
+            CHECK(response.getStatus() == HTTPResponse::HTTPStatus::HTTP_CREATED);
          }
       }
    }
@@ -65,7 +59,7 @@ SCENARIO("RequestHandlerTest", "[http]")
 
          THEN("The topic creation is idempotent")
          {
-            CHECK(response.getStatus() == HTTP_OK);
+            CHECK(response.getStatus() == HTTPResponse::HTTPStatus::HTTP_OK);
          }
       }
    }
@@ -90,7 +84,7 @@ SCENARIO("RequestHandlerTest", "[http]")
 
          THEN("The request succeeds")
          {
-            CHECK(response.getStatus() == HTTP_OK);
+            CHECK(response.getStatus() == HTTPResponse::HTTPStatus::HTTP_OK);
          }
       }
    }
@@ -115,7 +109,7 @@ SCENARIO("RequestHandlerTest", "[http]")
 
          THEN("The topic was not found")
          {
-            CHECK(response.getStatus() == HTTP_NOT_FOUND);
+            CHECK(response.getStatus() == HTTPResponse::HTTPStatus::HTTP_NOT_FOUND);
          }
       }
    }

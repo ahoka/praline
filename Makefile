@@ -1,12 +1,9 @@
-CXX=		clang++-3.6
+CXX=		g++-5
 CPP=		${CXX} -E
-LIBCXX=		libc++
-LIBCXX=		libc++
-#LIBCXX=		libstdc++
-CXXFLAGS=	-std=c++14 -stdlib=${LIBCXX} -O0 -Wall -Wextra -g
+CXXFLAGS=	-std=c++14  -O0 -Wall -Wextra -g
 CPPFLAGS=	-I/opt/poco/include
 LD=		${CXX}
-LDFLAGS=	-std=c++14 -stdlib=${LIBCXX} -L/opt/poco/lib -Wl,-rpath=/opt/poco/lib
+LDFLAGS=	-std=c++14 -L/opt/poco/lib -Wl,-rpath=/opt/poco/lib
 LIBS=		-lPocoFoundation -lPocoUtil -lPocoNet
 
 SRC=		RequestHandlerFactory.cc RequestHandler.cc HttpSubsystem.cc \

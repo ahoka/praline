@@ -8,28 +8,25 @@
 #include <unistd.h>
 #include <errno.h>
 
+#include <algorithm>
+#include <iterator>
+
 using namespace praline;
 
-struct MessagePointer
-{
-   MessagePointer(uint64_t seqno, uint64_t offset, uint32_t size)
-      : sequenceNumber(seqno),
-        fileOffset(offset),
-        messageSize(size)
-   {
-   }
-   
-   uint64_t sequenceNumber;
-   uint64_t fileOffset;
-   uint32_t messageSize;
-};
-
 std::ostream&
-operator<<(std::ostream& s, MessagePointer&& message)
+operator<<(std::ostream& s, const MessagePointer&& message)
 {
    return s.write((const char*)&message.sequenceNumber, sizeof(message.sequenceNumber))
       .write((const char*)&message.fileOffset, sizeof(message.fileOffset))
       .write((const char*)&message.messageSize, sizeof(message.messageSize));
+}
+
+std::istream&
+operator>>(std::istream& s, MessagePointer& message)
+{
+   return s.read((char*)&message.sequenceNumber, sizeof(message.sequenceNumber))
+      .read((char*)&message.fileOffset, sizeof(message.fileOffset))
+      .read((char*)&message.messageSize, sizeof(message.messageSize));
 }
 
 TopicWriter::TopicWriter(const std::string& topicName, Poco::Logger& logger)
@@ -76,14 +73,14 @@ TopicWriter::open()
 {
    logM.information("Opening files '%s' and '%s'", dataFileM, metaFileM);
 
-   dataStreamM.open(dataFileM, std::ios_base::out | std::ios_base::binary | std::ios_base::app);
+   dataStreamM.open(dataFileM, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::app);
    if (dataStreamM.fail())
    {
       logM.error("Opening '%s' failed!", dataFileM);
       return false;
    }
 
-   metaStreamM.open(metaFileM, std::ios_base::out | std::ios_base::binary | std::ios_base::app);
+   metaStreamM.open(metaFileM, std::ios_base::in | std::ios_base::out | std::ios_base::binary | std::ios_base::app);
    if (metaStreamM.fail())
    {
       logM.error("Opening '%s' failed!", metaFileM);
@@ -91,6 +88,31 @@ TopicWriter::open()
    }
 
    logM.information("Opening topic files successful", metaFileM);
+
+   // UGLY!
+   for (;;)
+   {
+      MessagePointer mp;
+      metaStreamM >> mp;
+
+      if (metaStreamM.eof())
+      {
+         break;
+      }
+
+      logM.information("Adding entry to index: s:%lu o:%lu s:%lu",
+                       (unsigned long)mp.sequenceNumber,
+                       (unsigned long)mp.fileOffset,
+                       (unsigned long)mp.messageSize);
+      
+      indexM.push_back(mp);
+   }
+
+   if (indexM.size() > 0)
+   {
+      nextSequenceNumber = (indexM.end() - 1)->sequenceNumber + 1;
+      logM.information("Next logical sequence number is %lu", (unsigned long)nextSequenceNumber);
+   }
 
    return true;
 }
@@ -136,6 +158,7 @@ TopicWriter::write(std::istream& data)
       {
          // write meta-data
          auto sequenceNumber = getNextSequenceNumber();
+         metaStreamM.clear();
          metaStreamM << MessagePointer(sequenceNumber,
                                        startPosition, messageSize);
          metaStreamM.flush();
@@ -155,4 +178,10 @@ TopicWriter::write(std::istream& data)
          }
       }
    }
+}
+
+bool
+read(std::ostream& stream, uint64_t sequenceNumber)
+{
+   return false;
 }

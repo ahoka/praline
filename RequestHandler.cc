@@ -19,11 +19,11 @@
 // X-Praline-Last: 1400
 //
 
-using Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK;
-using Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST;
-using Poco::Net::HTTPResponse::HTTPStatus::HTTP_CREATED;
-using Poco::Net::HTTPResponse::HTTPStatus::HTTP_INTERNAL_SERVER_ERROR;
-using Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND;
+const auto HTTP_OK = Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK;
+const auto HTTP_BAD_REQUEST = Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST;
+const auto HTTP_CREATED = Poco::Net::HTTPResponse::HTTPStatus::HTTP_CREATED;
+const auto HTTP_INTERNAL_SERVER_ERROR = Poco::Net::HTTPResponse::HTTPStatus::HTTP_INTERNAL_SERVER_ERROR;
+const auto HTTP_NOT_FOUND = Poco::Net::HTTPResponse::HTTPStatus::HTTP_NOT_FOUND;
 
 namespace
 {
