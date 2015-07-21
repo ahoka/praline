@@ -9,49 +9,45 @@
 using namespace praline;
 
 TopicWriter::TopicWriter(const std::string& topicName, Poco::Logger& logger)
-   : fileNameM(topicName + ".data"),
+   : dataFileM(topicName + ".data"),
+     metaFileM(topicName + ".meta"),
      logM(logger)
 {
 }
 
 TopicWriter::~TopicWriter()
 {
-   if (streamM.is_open())
+   if (dataStreamM.is_open())
    {
       logM.information("Closing file");
-      streamM.close();
-      if (streamM.fail())
+      dataStreamM.close();
+      if (dataStreamM.fail())
       {
          logM.information("Closing file failed!");
       }
    }
 }
 
-TopicWriter::TopicWriter(const TopicWriter& other)
-   : fileNameM(other.fileNameM),
-     logM(other.logM)
-{
-}
-
-TopicWriter&
-TopicWriter::operator=(const TopicWriter& other)
-{
-   return *this;
-}
-
 bool
 TopicWriter::open()
 {
-   logM.information("Opening file %s", fileNameM);
+   logM.information("Opening files '%s' and '%s'", dataFileM, metaFileM);
 
-   streamM.open(fileNameM);
-   if (streamM.fail())
+   dataStreamM.open(dataFileM, std::ios_base::out | std::ios_base::app);
+   if (dataStreamM.fail())
    {
-      logM.error("Open failed!");
+      logM.error("Opening '%s' failed!", dataFileM);
       return false;
    }
 
-   logM.information("Opened successful");
+   metaStreamM.open(metaFileM, std::ios_base::out | std::ios_base::app);
+   if (metaStreamM.fail())
+   {
+      logM.error("Opening '%s' failed!", metaFileM);
+      return false;
+   }
+
+   logM.information("Opening topic files successful", metaFileM);
 
    return true;
 }
@@ -59,21 +55,21 @@ TopicWriter::open()
 bool
 TopicWriter::write(std::istream& data)
 {
-   logM.information("Writing to file '%s'", fileNameM);
+   logM.information("Writing to file '%s'", dataFileM);
 
-   streamM.clear();
-   streamM << data.rdbuf();
-   streamM.flush();
+   dataStreamM.clear();
+   dataStreamM << data.rdbuf();
+   dataStreamM.flush();
 
-   if (streamM.bad())
+   if (dataStreamM.bad())
    {
-      logM.information("Writing to file '%s' set badbit!", fileNameM);
+      logM.information("Writing to file '%s' set badbit!", dataFileM);
    }
 
-   if (streamM.fail())
+   if (dataStreamM.fail())
    {
-      logM.information("Writing to file '%s' set failbit!", fileNameM);
+      logM.information("Writing to file '%s' set failbit!", dataFileM);
    }
    
-   return streamM.good();
+   return dataStreamM.good();
 }

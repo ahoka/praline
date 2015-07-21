@@ -18,33 +18,39 @@ HttpSubsystem::~HttpSubsystem()
 const char*
 HttpSubsystem::name() const
 {
-	return "Http";
+   return "Http";
 }
 
 void
 HttpSubsystem::initialize(Poco::Util::Application& app)
 {
-	logM.information("initialize");
-        app.loadConfiguration();
+   logM.information("initialize");
+   app.loadConfiguration();
 
-        int port = app.config().getInt("port", 8080);
-        logM.information("listening on port %d", port);
-        serverM = new Poco::Net::HTTPServer(new RequestHandlerFactory(topicListM), port);
-        serverM->start();
-	logM.information("server running");
+   auto logdir = app.config().getString("logdir", ".");
+   if (chdir(logdir.c_str()) == -1)
+   {
+      logM.error("Can't change to logdir '%s'", logdir);
+   }
+
+   int port = app.config().getInt("port", 8080);
+   logM.information("listening on port %d", port);
+   serverM = new Poco::Net::HTTPServer(new RequestHandlerFactory(topicListM), port);
+   serverM->start();
+   logM.information("server running");
 }
 
 void
 HttpSubsystem::reinitialize(Poco::Util::Application& app)
 {
-	logM.information("reinitalize");
+   logM.information("reinitalize");
 }
 
 void
 HttpSubsystem::uninitialize()
 {
-	logM.information("waiting for request termination");
-        serverM->stopAll();
-	logM.information("uninitalize");
-        delete serverM;
+   logM.information("waiting for request termination");
+   serverM->stopAll();
+   logM.information("uninitalize");
+   delete serverM;
 }
