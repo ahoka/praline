@@ -163,5 +163,6 @@ RequestHandler::handleRequest(Request& request, Response& response)
       logM.information("dropping invalid request");
       response.setStatusAndReason(HTTP_BAD_REQUEST);
       response.setContentLength(0);
+      response.send().flush();
    }
 }
