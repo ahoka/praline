@@ -75,7 +75,7 @@ RequestHandler::handleTopicPost(Request& request, Response& response, const std:
 }
 
 void
-RequestHandler::handleTopicGet(Request& request, Response& response, const std::string& topicName)
+RequestHandler::handleTopicGet(Request&, Response& response, const std::string& topicName)
 {
    logM.information("getting message from topic '%s'", topicName);
    
@@ -85,7 +85,7 @@ RequestHandler::handleTopicGet(Request& request, Response& response, const std::
 }
 
 void
-RequestHandler::handleTopicPut(Request& request, Response& response, const std::string& topicName)
+RequestHandler::handleTopicPut(Request&, Response& response, const std::string& topicName)
 {
    logM.information("creating topic '%s'", topicName);
 
@@ -111,7 +111,7 @@ RequestHandler::handleTopicPut(Request& request, Response& response, const std::
 }
 
 void
-RequestHandler::handleTopicDelete(Request& request, Response& response, const std::string& topicName)
+RequestHandler::handleTopicDelete(Request&, Response& response, const std::string& topicName)
 {
    logM.information("deleting topic '%s'", topicName);
 

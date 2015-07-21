@@ -25,11 +25,11 @@ private:
    std::string bufferM;
    std::stringstream streamM;
    
-   void redirect(const std::string & uri, HTTPStatus status = HTTP_FOUND)
+   void redirect(const std::string&, HTTPStatus)
    {
    }
 
-   void requireAuthentication(const std::string & realm)
+   void requireAuthentication(const std::string&)
    {
    }
 
@@ -38,7 +38,7 @@ private:
       return streamM;
    }
 
-   void sendBuffer(const void * pBuffer, std::size_t length)
+   void sendBuffer(const void*, std::size_t)
    {
    }
 
@@ -46,7 +46,7 @@ private:
    {
    }
 
-   void sendFile(const std::string & path, const std::string & mediaType)
+   void sendFile(const std::string&, const std::string&)
    {
    }
 
