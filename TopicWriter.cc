@@ -8,6 +8,12 @@
 
 using namespace praline;
 
+struct MessagePointer
+{
+   uint64_t sequenceNumber;
+   uint64_t fileOffset;
+};
+
 TopicWriter::TopicWriter(const std::string& topicName, Poco::Logger& logger)
    : dataFileM(topicName + ".data"),
      metaFileM(topicName + ".meta"),
@@ -28,19 +34,31 @@ TopicWriter::~TopicWriter()
    }
 }
 
+// Writes:
+//  - Open data file for append
+//  - Open meta file for append
+//  - Read meta file into memory
+//  - All meta write goes both to memory and file
+//
+// Reads:
+//  - Find sequence number of message in memory (binary search)
+//  - Seek to offset in data file
+//  - Stream message to consumer
+//
+
 bool
 TopicWriter::open()
 {
    logM.information("Opening files '%s' and '%s'", dataFileM, metaFileM);
 
-   dataStreamM.open(dataFileM, std::ios_base::out | std::ios_base::app);
+   dataStreamM.open(dataFileM, std::ios_base::out | std::ios_base::binary | std::ios_base::app);
    if (dataStreamM.fail())
    {
       logM.error("Opening '%s' failed!", dataFileM);
       return false;
    }
 
-   metaStreamM.open(metaFileM, std::ios_base::out | std::ios_base::app);
+   metaStreamM.open(metaFileM, std::ios_base::out | std::ios_base::binary | std::ios_base::app);
    if (metaStreamM.fail())
    {
       logM.error("Opening '%s' failed!", metaFileM);
