@@ -1,5 +1,7 @@
 #include "TopicWriter.hh"
 
+#include <Poco/NumberFormatter.h>
+
 #include <fcntl.h>
 #include <cassert>
 #include <cstdio>
@@ -10,12 +12,29 @@ using namespace praline;
 
 struct MessagePointer
 {
+   MessagePointer(uint64_t seqno, uint64_t offset, uint32_t size)
+      : sequenceNumber(seqno),
+        fileOffset(offset),
+        messageSize(size)
+   {
+   }
+   
    uint64_t sequenceNumber;
    uint64_t fileOffset;
+   uint32_t messageSize;
 };
 
+std::ostream&
+operator<<(std::ostream& s, MessagePointer&& message)
+{
+   return s.write((const char*)&message.sequenceNumber, sizeof(message.sequenceNumber))
+      .write((const char*)&message.fileOffset, sizeof(message.fileOffset))
+      .write((const char*)&message.messageSize, sizeof(message.messageSize));
+}
+
 TopicWriter::TopicWriter(const std::string& topicName, Poco::Logger& logger)
-   : dataFileM(topicName + ".data"),
+   : nextSequenceNumber(0),
+     dataFileM(topicName + ".data"),
      metaFileM(topicName + ".meta"),
      logM(logger)
 {
@@ -32,6 +51,12 @@ TopicWriter::~TopicWriter()
          logM.information("Closing file failed!");
       }
    }
+}
+
+uint64_t
+TopicWriter::getNextSequenceNumber()
+{
+   return nextSequenceNumber++;
 }
 
 // Writes:
@@ -76,18 +101,58 @@ TopicWriter::write(std::istream& data)
    logM.information("Writing to file '%s'", dataFileM);
 
    dataStreamM.clear();
+
+   auto startPosition = dataStreamM.tellp();
+   
    dataStreamM << data.rdbuf();
    dataStreamM.flush();
 
+   auto endPosition = dataStreamM.tellp();
+
    if (dataStreamM.bad())
    {
-      logM.information("Writing to file '%s' set badbit!", dataFileM);
+      logM.error("Writing to file '%s' set badbit!", dataFileM);
    }
 
    if (dataStreamM.fail())
    {
-      logM.information("Writing to file '%s' set failbit!", dataFileM);
+      logM.error("Writing to file '%s' set failbit!", dataFileM);
    }
    
-   return dataStreamM.good();
+   if (!dataStreamM.good())
+   {
+      logM.error("Writing to file '%s' failed!", dataFileM);
+      return false;
+   }
+   else
+   {
+      auto messageSize = endPosition - startPosition;
+      if (messageSize <= 0)
+      {
+         logM.error("Invalid write length!");
+         return false;
+      }
+      else
+      {
+         // write meta-data
+         auto sequenceNumber = getNextSequenceNumber();
+         metaStreamM << MessagePointer(sequenceNumber,
+                                       startPosition, messageSize);
+         metaStreamM.flush();
+
+         if (!metaStreamM.good())
+         {
+            logM.error("Writing to file '%s' failed!", metaFileM);
+            return false;
+         }
+         else
+         {
+            logM.information("Message recorded: s:%lu o:%lu s:%lu",
+                             (unsigned long)sequenceNumber,
+                             (unsigned long)startPosition,
+                             (unsigned long)messageSize);
+            return true;
+         }
+      }
+   }
 }

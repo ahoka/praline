@@ -5,6 +5,7 @@
 
 #include <string>
 #include <fstream>
+#include <cstdint>
 
 namespace praline
 {
@@ -24,6 +25,10 @@ public:
    bool open();
 
 private:
+   uint64_t getNextSequenceNumber();
+
+   uint64_t nextSequenceNumber;
+   
    std::string dataFileM;
    std::ofstream dataStreamM;
 
