@@ -48,7 +48,8 @@ public:
    TopicWriter& operator=(const TopicWriter&&) = delete;
    
    bool write(std::istream& data);
-   bool read(std::ostream& stream, uint64_t& sequenceNumber);
+   bool lookup(uint64_t sequenceNumber, MessagePointer& message);
+   bool read(std::ostream& stream, const MessagePointer& message);
    bool open();
 
 private:

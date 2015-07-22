@@ -101,24 +101,32 @@ RequestHandler::handleTopicGet(Request& request, Response& response, const std::
       response.setStatusAndReason(HTTP_NOT_FOUND);
       response.setContentLength(0);
       response.send().flush();
+      return;
+   }
+   
+   auto topic = res.second;
+   MessagePointer message;
+   if (!topic.lookup(seqno, message))
+   {
+      logM.information("topic '%s' does not have message %lu", topicName, (unsigned long)seqno);
+      response.setStatusAndReason(HTTP_NOT_FOUND);
+      response.setContentLength(0);
+      response.send().flush();
+      return;
+   }
+
+   response.setStatusAndReason(HTTP_OK);   
+   response.set("X-Praline-Offset", std::to_string(seqno));
+
+   if (!topic.read(response.send(), message))
+   {
+      logM.information("error reading from '%s'", topicName);
+      internalError(response);
    }
    else
    {
-      auto topic = res.second;
 
-      response.set("X-Praline-Offset", std::to_string(seqno));
-      
-      if (!topic.read(response.send(), seqno))
-      {
-         logM.information("error reading from '%s'", topicName);
-         internalError(response);
-      }
-      else
-      {
-         response.setStatusAndReason(HTTP_OK);
-//         response.setContentLength(0);
-         response.send().flush();
-      }
+      response.send().flush();
    }
 }
 

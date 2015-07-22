@@ -181,20 +181,26 @@ TopicWriter::write(std::istream& data)
 }
 
 bool
-TopicWriter::read(std::ostream& stream, uint64_t& sequenceNumber)
+TopicWriter::lookup(uint64_t sequenceNumber, MessagePointer& message)
 {
    // XXX search reverse to optimize for accessing later items?
-   auto message = std::lower_bound(indexM.begin(), indexM.end(), sequenceNumber);
-   if (message == indexM.end())
+   auto m = std::lower_bound(indexM.begin(), indexM.end(), sequenceNumber);
+   if (m == indexM.end())
    {
       logM.warning("message %lu not exising in topic '%s'",
                    (unsigned long)sequenceNumber, dataFileM);
       return false;
    }
+   else
+   {
+      message = *m;
+      return true;
+   }
+}
 
-   // it may be a different number than we asked for
-   sequenceNumber = message->sequenceNumber;
-
+bool
+TopicWriter::read(std::ostream& stream, const MessagePointer& message)
+{
    std::ifstream reader(dataFileM);
    if (!reader.is_open())
    {
@@ -202,14 +208,14 @@ TopicWriter::read(std::ostream& stream, uint64_t& sequenceNumber)
       return false;
    }
 
-   reader.seekg(message->fileOffset);
+   reader.seekg(message.fileOffset);
    if (!reader.good())
    {
-      logM.error("Can't seek to %lu in '%s'", (unsigned long)message->fileOffset, dataFileM);
+      logM.error("Can't seek to %lu in '%s'", (unsigned long)message.fileOffset, dataFileM);
       return false;
    }
 
-   std::copy_n(std::istream_iterator<char>(reader), message->messageSize,
+   std::copy_n(std::istream_iterator<char>(reader), message.messageSize,
                std::ostream_iterator<char>(stream));
 
    return true;

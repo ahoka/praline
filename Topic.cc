@@ -46,7 +46,13 @@ Topic::write(std::istream& data)
 }
 
 bool
-Topic::read(std::ostream& data, uint64_t& sequence)
+Topic::lookup(uint64_t sequenceNumber, MessagePointer& message)
 {
-   return writerM->read(data, sequence);
+   return writerM->lookup(sequenceNumber, message);
+}
+
+bool
+Topic::read(std::ostream& stream, const MessagePointer& message)
+{
+   return writerM->read(stream, message);
 }

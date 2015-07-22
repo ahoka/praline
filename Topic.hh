@@ -18,7 +18,9 @@ public:
 
    bool open();
    bool write(std::istream& data);
-   bool read(std::ostream& data, uint64_t& sequence);
+   bool lookup(uint64_t sequenceNumber, MessagePointer& message);
+   bool read(std::ostream& stream, const MessagePointer& message);
+
    std::string name() const;
 
 private:
