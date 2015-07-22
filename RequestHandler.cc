@@ -75,9 +75,22 @@ RequestHandler::handleTopicPost(Request& request, Response& response, const std:
 }
 
 void
-RequestHandler::handleTopicGet(Request&, Response& response, const std::string& topicName)
+RequestHandler::handleTopicGet(Request& request, Response& response, const std::string& topicName)
 {
-   uint64_t seqno = 0;
+   uint64_t seqno;
+   try {
+      auto sequenceHeader = request.get("X-Praline-Offset");
+      seqno = std::stoull(sequenceHeader);
+   }
+   catch (std::exception& ex)
+   {
+      logM.error("invalid or missing X-Praline-Offset, dropping request");
+
+      response.setStatusAndReason(HTTP_BAD_REQUEST);
+      response.setContentLength(0);
+      response.send().flush();
+      return;
+   }
    
    logM.information("getting message '%lu' from topic '%s'", (unsigned long)seqno, topicName);
 
@@ -93,7 +106,7 @@ RequestHandler::handleTopicGet(Request&, Response& response, const std::string& 
    {
       auto topic = res.second;
 
-      response.set("X-Praline-Id", std::to_string(seqno));
+      response.set("X-Praline-Offset", std::to_string(seqno));
       
       if (!topic.read(response.send(), seqno))
       {

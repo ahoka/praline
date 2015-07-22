@@ -24,7 +24,7 @@ Praline::Praline::Praline(Poco::Logger& logger)
 {
    AutoPtr<Poco::ColorConsoleChannel> consoleChannel(new Poco::ColorConsoleChannel);
    AutoPtr<Poco::PatternFormatter> patternFormatter(new Poco::PatternFormatter);
-   patternFormatter->setProperty("pattern", "%Y-%m-%d %H:%M:%S %s: %t");
+   patternFormatter->setProperty("pattern", "%Y-%m-%d %H:%M:%S.%F %s: %t");
    AutoPtr<Poco::FormattingChannel> formattingChannel(new Poco::FormattingChannel(patternFormatter, consoleChannel));
    AutoPtr<Poco::AsyncChannel> asyncChannel(new Poco::AsyncChannel(formattingChannel)); 
    
