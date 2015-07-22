@@ -2,6 +2,8 @@
 #define TOPICWRITER_HH
 
 #include <Poco/Logger.h>
+#include <Poco/AtomicCounter.h>
+#include <Poco/RWLock.h>
 
 #include <string>
 #include <fstream>
@@ -55,7 +57,8 @@ public:
 private:
    uint64_t getNextSequenceNumber();
 
-   uint64_t nextSequenceNumber;
+   // XXX need to be 64bit unsigned!
+   Poco::AtomicCounter nextSequenceNumber;
    
    std::string dataFileM;
    std::fstream dataStreamM;
@@ -64,6 +67,7 @@ private:
    std::fstream metaStreamM;
 
    std::vector<MessagePointer> indexM;
+   Poco::RWLock indexLockM;
 
    Poco::Logger& logM;
 };

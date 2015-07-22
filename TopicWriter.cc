@@ -104,8 +104,10 @@ TopicWriter::open()
                        (unsigned long)mp.sequenceNumber,
                        (unsigned long)mp.fileOffset,
                        (unsigned long)mp.messageSize);
-      
+
+//      indexLockM.writeLock();
       indexM.push_back(mp);
+//      indexLockM.unlock();
    }
 
    if (indexM.size() > 0)
@@ -170,6 +172,10 @@ TopicWriter::write(std::istream& data)
          }
          else
          {
+            indexLockM.writeLock();
+            indexM.emplace_back(sequenceNumber, startPosition, messageSize);
+            indexLockM.unlock();
+            
             logM.information("Message recorded: s:%lu o:%lu s:%lu",
                              (unsigned long)sequenceNumber,
                              (unsigned long)startPosition,
@@ -184,7 +190,9 @@ bool
 TopicWriter::lookup(uint64_t sequenceNumber, MessagePointer& message)
 {
    // XXX search reverse to optimize for accessing later items?
+   indexLockM.readLock();
    auto m = std::lower_bound(indexM.begin(), indexM.end(), sequenceNumber);
+   indexLockM.unlock();
    if (m == indexM.end())
    {
       logM.warning("message %lu not exising in topic '%s'",

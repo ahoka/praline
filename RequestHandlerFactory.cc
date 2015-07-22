@@ -16,6 +16,6 @@ RequestHandlerFactory::~RequestHandlerFactory()
 
 Poco::Net::HTTPRequestHandler *RequestHandlerFactory::createRequestHandler(const Poco::Net::HTTPServerRequest&)
 {
-   logM.information("Creating request handler");
+   logM.debug("Creating request handler");
    return new RequestHandler(topicListM);
 }

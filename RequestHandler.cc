@@ -180,8 +180,8 @@ RequestHandler::handleTopicDelete(Request&, Response& response, const std::strin
 void
 RequestHandler::handleRequest(Request& request, Response& response)
 {
-   logM.information("URL: %s", request.getURI());
-   logM.information("Method: %s", request.getMethod());
+   logM.debug("URL: %s", request.getURI());
+   logM.debug("Method: %s", request.getMethod());
 
    std::vector<std::string> path;
    Poco::URI(request.getURI()).getPathSegments(path);

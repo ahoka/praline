@@ -4,7 +4,7 @@ CXXFLAGS=	-std=c++14  -O0 -Wall -Wextra -g
 CPPFLAGS=	-I/opt/poco/include
 LD=		${CXX}
 LDFLAGS=	-std=c++14 -L/opt/poco/lib -Wl,-rpath=/opt/poco/lib
-LIBS=		-lPocoFoundation -lPocoUtil -lPocoNet
+LIBS=		-lPocoFoundation -lPocoUtil -lPocoNet -pthread
 
 SRC=		RequestHandlerFactory.cc RequestHandler.cc HttpSubsystem.cc \
 		Praline.cc Topic.cc TopicList.cc TopicWriter.cc
