@@ -18,6 +18,7 @@ public:
 
    bool open();
    bool write(std::istream& data);
+   bool read(std::ostream& data, uint64_t& sequence);
    std::string name() const;
 
 private:

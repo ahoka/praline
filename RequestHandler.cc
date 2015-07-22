@@ -77,11 +77,36 @@ RequestHandler::handleTopicPost(Request& request, Response& response, const std:
 void
 RequestHandler::handleTopicGet(Request&, Response& response, const std::string& topicName)
 {
-   logM.information("getting message from topic '%s'", topicName);
+   uint64_t seqno = 0;
    
-   response.setStatusAndReason(HTTP_BAD_REQUEST);
-   response.setContentLength(0);
-   response.send().flush();
+   logM.information("getting message '%lu' from topic '%s'", (unsigned long)seqno, topicName);
+
+   auto res = topicListM.find(topicName);
+   if (!res.first)
+   {
+      logM.information("topic '%s' is not existing or open", topicName);
+      response.setStatusAndReason(HTTP_NOT_FOUND);
+      response.setContentLength(0);
+      response.send().flush();
+   }
+   else
+   {
+      auto topic = res.second;
+
+      response.set("X-Praline-Id", std::to_string(seqno));
+      
+      if (!topic.read(response.send(), seqno))
+      {
+         logM.information("error reading from '%s'", topicName);
+         internalError(response);
+      }
+      else
+      {
+         response.setStatusAndReason(HTTP_OK);
+//         response.setContentLength(0);
+         response.send().flush();
+      }
+   }
 }
 
 void
@@ -144,25 +169,27 @@ RequestHandler::handleRequest(Request& request, Response& response)
       if (request.getMethod() == "PUT")
       {
          handleTopicPut(request, response, path[0]);
+         return;
       }
       else if (request.getMethod() == "DELETE")
       {
          handleTopicDelete(request, response, path[0]);
+         return;
       }
       else if (request.getMethod() == "POST")
       {
          handleTopicPost(request, response, path[0]);
+         return;
       }
       else if (request.getMethod() == "GET")
       {
          handleTopicGet(request, response, path[0]);
+         return;
       }
    }
-   else
-   {
-      logM.information("dropping invalid request");
-      response.setStatusAndReason(HTTP_BAD_REQUEST);
-      response.setContentLength(0);
-      response.send().flush();
-   }
+
+   logM.information("dropping invalid request");
+   response.setStatusAndReason(HTTP_BAD_REQUEST);
+   response.setContentLength(0);
+   response.send().flush();
 }

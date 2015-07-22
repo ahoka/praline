@@ -44,3 +44,9 @@ Topic::write(std::istream& data)
 {
    return writerM->write(data);
 }
+
+bool
+Topic::read(std::ostream& data, uint64_t& sequence)
+{
+   return writerM->read(data, sequence);
+}

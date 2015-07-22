@@ -25,6 +25,11 @@ struct MessagePointer
         messageSize(size)
    {
    }
+
+   bool operator<(uint64_t seqNo)
+   {
+      return sequenceNumber < seqNo;
+   }
    
    uint64_t sequenceNumber;
    uint64_t fileOffset;
@@ -43,7 +48,7 @@ public:
    TopicWriter& operator=(const TopicWriter&&) = delete;
    
    bool write(std::istream& data);
-   bool read(std::ostream& stream, uint64_t sequenceNumber);
+   bool read(std::ostream& stream, uint64_t& sequenceNumber);
    bool open();
 
 private:

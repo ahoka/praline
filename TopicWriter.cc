@@ -181,7 +181,36 @@ TopicWriter::write(std::istream& data)
 }
 
 bool
-read(std::ostream& stream, uint64_t sequenceNumber)
+TopicWriter::read(std::ostream& stream, uint64_t& sequenceNumber)
 {
-   return false;
+   // XXX search reverse to optimize for accessing later items?
+   auto message = std::lower_bound(indexM.begin(), indexM.end(), sequenceNumber);
+   if (message == indexM.end())
+   {
+      logM.warning("message %lu not exising in topic '%s'",
+                   (unsigned long)sequenceNumber, dataFileM);
+      return false;
+   }
+
+   // it may be a different number than we asked for
+   sequenceNumber = message->sequenceNumber;
+
+   std::ifstream reader(dataFileM);
+   if (!reader.is_open())
+   {
+      logM.error("Can't open '%s'", dataFileM);
+      return false;
+   }
+
+   reader.seekg(message->fileOffset);
+   if (!reader.good())
+   {
+      logM.error("Can't seek to %lu in '%s'", (unsigned long)message->fileOffset, dataFileM);
+      return false;
+   }
+
+   std::copy_n(std::istream_iterator<char>(reader), message->messageSize,
+               std::ostream_iterator<char>(stream));
+
+   return true;
 }
