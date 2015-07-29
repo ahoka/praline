@@ -3,6 +3,7 @@
 
 #include "Topic.hh"
 
+#include <string>
 #include <map>
 #include <utility>
 
@@ -11,7 +12,7 @@ namespace praline
 class TopicList
 {
 public:
-   TopicList();
+   explicit TopicList(const std::string&);
    virtual ~TopicList();
 
    virtual bool insert(Topic topic);
@@ -21,6 +22,7 @@ public:
 private:
    using TopicMap = std::map<std::string, Topic>;
 
+   std::string pathM;
    TopicMap topicMapM;
 };
 }

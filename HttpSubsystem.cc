@@ -35,7 +35,8 @@ HttpSubsystem::initialize(Poco::Util::Application& app)
 
    int port = app.config().getInt("port", 8080);
    logM.information("listening on port %d", port);
-   serverM = new Poco::Net::HTTPServer(new RequestHandlerFactory(topicListM), port);
+   auto topicList = new TopicList(logdir); // XXX shared_ptr
+   serverM = new Poco::Net::HTTPServer(new RequestHandlerFactory(*topicList), port);
    serverM->start();
    logM.information("server running");
 }

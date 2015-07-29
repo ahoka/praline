@@ -24,7 +24,7 @@ private:
    virtual void uninitialize();
 
    Poco::Net::HTTPServer* serverM;
-   TopicList topicListM;
+  //   TopicList topicListM;
 
    Poco::Logger& logM;
 };
