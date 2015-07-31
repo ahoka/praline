@@ -12,7 +12,7 @@ namespace praline
 class TopicList
 {
 public:
-   explicit TopicList(const std::string&);
+   explicit TopicList(const std::string&, Poco::Logger& logger = Poco::Logger::get("TopicList"));
    virtual ~TopicList();
 
    virtual bool insert(Topic topic);
@@ -24,6 +24,7 @@ private:
 
    std::string pathM;
    TopicMap topicMapM;
+   Poco::Logger& logM;
 };
 }
 

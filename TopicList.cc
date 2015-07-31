@@ -1,16 +1,26 @@
 #include "TopicList.hh"
 
 #include <Poco/DirectoryIterator.h>
+#include <cstdio>
 
 using namespace praline;
 
-TopicList::TopicList(const std::string& path)
-  : pathM(path)
+TopicList::TopicList(const std::string& path, Poco::Logger& logger)
+   : pathM(path),
+     logM(logger)
 {
+   logM.information("Using directory '%s'", path);
+   
   // populate from the current directory
-  for (Poco::DirectoryIterator dir = pathM; dir != Poco::DirectoryIterator(); ++dir)
+  for (Poco::DirectoryIterator di = pathM; di != Poco::DirectoryIterator(); ++di)
   {
-     // XXX dir.name();
+     Poco::Path file = di.name();
+     if (file.getExtension() == "meta")
+     {
+        auto topicName = file.getBaseName();
+        logM.information("Opening topic '%s'", topicName);
+        insert(Topic(topicName));
+     }
   }
 }
 
