@@ -125,7 +125,6 @@ RequestHandler::handleTopicGet(Request& request, Response& response, const std::
    }
    else
    {
-
       response.send().flush();
    }
 }
@@ -178,6 +177,24 @@ RequestHandler::handleTopicDelete(Request&, Response& response, const std::strin
 }
 
 void
+RequestHandler::handleSubscribe(Request& request, Response& response, const std::string& topicName, uint64_t id)
+{
+   auto res = topicListM.find(topicName);
+   if (!res.first)
+   {
+      logM.information("topic '%s' is not existing or open", topicName);
+      response.setStatusAndReason(HTTP_NOT_FOUND);
+      response.setContentLength(0);
+      response.send().flush();
+      return;
+   }
+
+   response.setStatusAndReason(HTTP_OK);
+   response.setContentLength(0);
+   response.send().flush();
+}
+
+void
 RequestHandler::handleRequest(Request& request, Response& response)
 {
    logM.debug("URL: %s", request.getURI());
@@ -206,6 +223,21 @@ RequestHandler::handleRequest(Request& request, Response& response)
       {
          handleTopicGet(request, response, path[0]);
          return;
+      }
+   }
+   else if (path.size() == 2)
+   {
+      if (request.getMethod() == "GET")
+      {
+         try
+         {
+            auto messageId = std::stoull(path[1], nullptr, 10);
+            handleSubscribe(request, response, path[0], messageId);
+         }
+         catch (std::exception& ex)
+         {
+            logM.warning("Badly formatted message id in request: %s", path[1]);
+         }
       }
    }
 

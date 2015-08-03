@@ -9,6 +9,8 @@
 
 #include "TopicList.hh"
 
+#include <cstdint>
+
 namespace praline
 {
 
@@ -26,6 +28,7 @@ private:
    void handleTopicPost(Request&, Response&, const std::string&);
    void handleTopicPut(Request&, Response&, const std::string&);
    void handleTopicDelete(Request&, Response&, const std::string&);
+   void handleSubscribe(Request&, Response&, const std::string&, uint64_t);
 
    TopicList& topicListM;
    Poco::Logger& logM;
