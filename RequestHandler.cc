@@ -4,21 +4,6 @@
 #include <Poco/URI.h>
 #include <vector>
 
-//
-// /<topic> POST -> create topic
-// /<topic> DELETE -> delete topic
-// /<topic>/messages POST -> push message
-// /<topic>/messages GET -> get message
-// /<topic>/messages HEAD -> header
-//
-// HTTP/1.1 200 OK
-// Date: Tue, 07 Jul 2015 15:58:56 GMT
-// Connection: Keep-Alive
-// Content-Length: 0
-// X-Praline-First: 1234
-// X-Praline-Last: 1400
-//
-
 const auto HTTP_OK = Poco::Net::HTTPResponse::HTTPStatus::HTTP_OK;
 const auto HTTP_BAD_REQUEST = Poco::Net::HTTPResponse::HTTPStatus::HTTP_BAD_REQUEST;
 const auto HTTP_CREATED = Poco::Net::HTTPResponse::HTTPStatus::HTTP_CREATED;
@@ -84,7 +69,7 @@ RequestHandler::handleTopicGet(Request& request, Response& response, const std::
    }
    catch (std::exception& ex)
    {
-      logM.error("invalid or missing X-Praline-Offset, dropping request");
+      logM.warning("invalid or missing X-Praline-Offset, dropping request");
 
       response.setStatusAndReason(HTTP_BAD_REQUEST);
       response.setContentLength(0);
@@ -241,7 +226,7 @@ RequestHandler::handleRequest(Request& request, Response& response)
       }
    }
 
-   logM.information("dropping invalid request");
+   logM.warning("Dropping invalid request: %s %s", request.getMethod(), request.getURI());
    response.setStatusAndReason(HTTP_BAD_REQUEST);
    response.setContentLength(0);
    response.send().flush();
